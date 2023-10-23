@@ -5,6 +5,7 @@ from Algorithms.Search_Algorithm import Search_Algorithm, Solution
 from Heuristics.Manhattan_Heuristic import manhattan_heuristic
 from Heuristics.Euclidean_Heuristic import euclidean_heuristic
 
+
 # Import necessary modules and classes for the A* search algorithm.
 
 class A_Star(Search_Algorithm):
@@ -38,7 +39,7 @@ class A_Star(Search_Algorithm):
         # Initialize data structures for the search, including a priority queue, explored set, and parent dictionary.
 
         while not frontier.empty():
-            _, state = frontier.get()
+            state = frontier.get()[1]
             state_str = self.stringify_state(state)
             explored.add(state_str)
 
@@ -47,7 +48,7 @@ class A_Star(Search_Algorithm):
             # Iterate while the frontier is not empty, exploring states until the goal state is reached.
 
             x, y = self.get_empty_tile_location(state)
-            cost, _ = parent.get(state_str)
+            cost = parent.get(state_str)[0]
             cost += 1
             # Retrieve the current state and update the cost of reaching this state.
 

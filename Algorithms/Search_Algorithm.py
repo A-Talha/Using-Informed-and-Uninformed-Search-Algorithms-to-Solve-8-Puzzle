@@ -37,10 +37,13 @@ class Search_Algorithm(ABC):
     def is_solvable(self):
         size = self.get_board_size()
         inversions_count = 0
+        state_list = [element for sublist in self.initial_state for element in sublist]
 
-        for i in range(size):
-            for j in range(size):
-                if i*size + j != self.initial_state[i][j]:
+        for i in range(size * size):
+            if state_list[i] == 0:
+                continue
+            for j in range(i):
+                if state_list[j] and state_list[i] > state_list[j]:
                     inversions_count += 1
 
         return inversions_count % 2 == 0
@@ -65,6 +68,8 @@ class Search_Algorithm(ABC):
 
 class Solution:
     def __init__(self, solvable, path=None, cost=None, nodes_expanded=None, search_depth=None, running_time=None):
+        if path is None:
+            path = []
         self.solvable = solvable
         self.path = path
         self.cost = cost
@@ -74,6 +79,16 @@ class Solution:
 
     def exist(self):
         return self.solvable
+
+    def stringify(self):
+        if not self.exist():
+            return ""
+        else:
+            string = "Cost: " + str(self.cost) + "\n"
+            string += "Nodes expanded: " + str(self.nodes_expanded) + "\n"
+            string += "Search depth: " + str(self.search_depth) + "\n"
+            string += "Running time: " + f"{self.running_time:.5f} S" + "\n"
+            return string
 
     def print(self):
         if not self.exist():

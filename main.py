@@ -4,7 +4,7 @@ from GUI.Window import *
 
 def main():
 
-    AStar_Manhattan = get_algorithm([[1, 2, 3], [4, 5, 8], [6, 7, 0]], "AStar", "Manhattan")
+    AStar_Manhattan = get_algorithm([[8, 0, 6], [5, 4, 7], [2, 3, 1]], "BFS")
     solution = AStar_Manhattan.solve()
 
     if solution.solvable:

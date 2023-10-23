@@ -22,7 +22,6 @@ class BFS(Search_Algorithm):
         parent[initial_state_str] = (0, None)
 
         start_time = time.perf_counter()
-        print(self.initial_state, self.goal_test)
 
         while not len(frontier) == 0:
             current_state = frontier.pop(0)

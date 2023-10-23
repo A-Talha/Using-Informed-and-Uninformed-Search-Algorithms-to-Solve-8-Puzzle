@@ -1,4 +1,5 @@
 import time
+import queue
 
 from Algorithms.Search_Algorithm import Search_Algorithm, Solution
 
@@ -12,7 +13,8 @@ class BFS(Search_Algorithm):
             print(self.is_solvable())
             return Solution(False)
 
-        frontier = [self.initial_state]
+        frontier = queue.Queue()
+        frontier.put(self.initial_state)
         explored = set()
         parent = dict()          # Parent map its key : current_state & value : (cost of the current_state, its parent)
 
@@ -23,8 +25,8 @@ class BFS(Search_Algorithm):
 
         start_time = time.perf_counter()
 
-        while not len(frontier) == 0:
-            current_state = frontier.pop(0)
+        while not frontier.empty():
+            current_state = frontier.get()
             current_state_str = self.stringify_state(current_state)
             explored.add(current_state_str)
             # print(current_state_str, "len frontier: ", len(frontier), "len explored: ", len(explored))
@@ -46,7 +48,7 @@ class BFS(Search_Algorithm):
                 new_state_str = self.stringify_state(new_state)
 
                 if new_state_str not in explored and new_state_str not in parent:
-                    frontier.append(new_state)
+                    frontier.put(new_state)
                     parent[new_state_str] = (cost, current_state_str)
                     search_depth = max(search_depth, cost)
 

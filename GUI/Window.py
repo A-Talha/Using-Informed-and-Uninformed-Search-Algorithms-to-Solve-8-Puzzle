@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from math import sqrt
 
+from Algorithms.Algorithm_Factory import get_algorithm
 
 BOARD_SIZE = 3
 BOARD_DIMENSION = 584
@@ -29,7 +30,7 @@ def convert_string_to_state(state_str):
 
 
 class Window:
-    def __init__(self, solution):
+    def __init__(self):
         # initialize the window
         self.root = tk.Tk()
         self.root.title("8-Puzzle")
@@ -53,8 +54,8 @@ class Window:
         # Dropdown menu for selecting the search algorithm
         algorithm_label = ttk.Label(side_frame, text="Select Algorithm:", style="Custom.TLabel")
         algorithm_label.pack(pady=(8, 4))
-        algorithm_var = tk.StringVar()
-        algorithm_combobox = ttk.Combobox(side_frame, textvariable=algorithm_var,
+        self.algorithm_var = tk.StringVar()
+        algorithm_combobox = ttk.Combobox(side_frame, textvariable=self.algorithm_var,
                                           values=["DFS", "BFS", "A-Star (Manhattan)", "A-Star (Euclidean)"], state="readonly", style="Custom.TCombobox")
         algorithm_combobox.current(0)
         algorithm_combobox.pack(pady=(0, 68))
@@ -64,11 +65,11 @@ class Window:
         initial_state_label.pack(pady=(8, 2))
         state_description_label = ttk.Label(side_frame, text="Write state in this form:\n    0,1,2,3,4,5,6,7,8", background=BACKGROUND_COLOR, foreground="white", font=("Helvetica", 10))
         state_description_label.pack(pady=(0, 4))
-        initial_state_entry = ttk.Entry(side_frame, style="Custom.TEntry")
-        initial_state_entry.pack(pady=(0, 8))
+        self.initial_state_entry = ttk.Entry(side_frame, style="Custom.TEntry")
+        self.initial_state_entry.pack(pady=(0, 8))
 
         # Solve button
-        self.solve_button = ttk.Button(side_frame, text="Solve", style="Custom.TButton")
+        self.solve_button = ttk.Button(side_frame, text="Solve", style="Custom.TButton",command=lambda: self.sol())
         self.next_state_button = ttk.Button(side_frame, text="Next", command=lambda: self.display_next_state(), style="Custom.TButton")
         self.previous_state_button = ttk.Button(side_frame, text="Previous", command=lambda: self.display_previous_state(), style="Custom.TButton")
 
@@ -79,8 +80,8 @@ class Window:
         self.current_state_label = ttk.Label(side_frame, text="Current State: 0", style="Solution.TLabel")
         self.current_state_label.pack(pady=(8, 2))
 
-        solution_header_label = ttk.Label(side_frame, style="Solution.TLabel")
-        solution_body_label = ttk.Label(side_frame, style="Solution.TLabel")
+        self.solution_header_label = ttk.Label(side_frame, style="Solution.TLabel")
+        self.solution_body_label = ttk.Label(side_frame, style="Solution.TLabel")
 
         self.canvas = tk.Canvas(self.root, width=BOARD_DIMENSION, height=BOARD_DIMENSION, highlightbackground=BACKGROUND_COLOR)
         self.canvas.pack()
@@ -88,22 +89,14 @@ class Window:
         self.tile_images = None
         self.load_images()
         self.current_state_index = 0
-        self.states = solution.path
+
 
         self.previous_state_button.configure(state="disabled")
-        if len(self.states) <= 1:
-            self.next_state_button.configure(state="disabled")
+        self.next_state_button.configure(state="disabled")
 
-        for state_index in range(len(self.states)):
-            self.states[state_index] = convert_string_to_state(self.states[state_index])
-        self.board_size = len(self.states[0])
 
-        solution_header_label.configure(text="Solution exists!")
-        solution_body_label.configure(text=solution.stringify())
-        solution_header_label.pack(pady=(68, 8))
-        solution_body_label.pack(pady=(0, 8))
 
-        self.draw_board(self.states[0])
+        #self.draw_board(self.states[0])
         self.root.mainloop()
 
     def load_images(self):
@@ -140,3 +133,55 @@ class Window:
                 if value != 0:
                     self.canvas.create_image(j * cell_width, i * cell_height, anchor=tk.NW, image=self.tile_images[value - 1])
 
+    def sol(self):
+        #reseting state buttons
+        self.previous_state_button.configure(state="disabled")
+        self.next_state_button.configure(state="disabled")
+
+        #taking intial satate and turning it into 2d list
+        intial = self.initial_state_entry.get()
+        intial = intial.split(",")
+        board = [[0] * 3 for _ in range(3)]
+        for i in range(0,3):
+            for j in range(0,3):
+                board[i][j] = int(intial[3*i + j])
+
+        #taking the method
+        method = self.algorithm_var.get()
+        hur = None
+        if (method[:6] == "A-Star"):
+            hur = method[7:]
+            method = method[:6]
+            hur = hur[1:-1]
+
+        #solving the board
+        method_object = get_algorithm(board, method,hur)
+        solution = method_object.solve()
+
+        #checking if the board has a solution
+        if(solution.solvable):
+            self.current_state_index = 0
+            self.current_state_label.configure(text="Current State: " + str(self.current_state_index))
+
+            self.solution_header_label.configure(text="Solution exists!")
+            self.solution_body_label.configure(text=solution.stringify())
+            self.solution_header_label.pack(pady=(68, 8))
+            self.solution_body_label.pack(pady=(0, 8))
+
+
+            self.states = solution.path
+            if len(self.states) > 1:
+                self.next_state_button.configure(state="enabled")
+            for state_index in range(len(self.states)):
+                self.states[state_index] = convert_string_to_state(self.states[state_index])
+
+            self.board_size = len(self.states[0])
+            self.draw_board(self.states[0])
+        else:
+            self.solution_header_label.configure(text="No Solution :(")
+            self.solution_body_label.configure(text=solution.stringify())
+            self.solution_header_label.pack(pady=(68, 8))
+            self.solution_body_label.pack(pady=(0, 8))
+
+            self.board_size = len(board)
+            self.draw_board(board)

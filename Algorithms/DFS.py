@@ -21,13 +21,11 @@ class DFS(Search_Algorithm):
         parent[initial_state_str] = (0, None)
 
         start_time = time.perf_counter()
-        print(self.initial_state, self.goal_test)
 
         while not len(frontier) == 0:
             current_state = frontier.pop(len(frontier) - 1)
             current_state_str = self.stringify_state(current_state)
             explored.add(current_state_str)
-           # print(current_state_str, "len frontier: ", len(frontier), "len explored: ", len(explored))
 
             if current_state == self.goal_test:
                 break

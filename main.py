@@ -1,16 +1,15 @@
 from Algorithms.Algorithm_Factory import *
+from GUI.Window import *
 
 
 def main():
-    notSolvable = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
-    test1 = [[8, 0, 6], [5, 4, 7], [2, 3, 1]]
-    test2 = [[1, 2, 5], [3, 4, 0], [6, 7, 8]]
-    test3 = [[1, 2, 5], [3, 4, 8], [6, 0, 7]]
-    AStar_Manhattan = get_algorithm(test1, "BFS", "Manhattan")
+
+    AStar_Manhattan = get_algorithm([[1, 2, 3], [4, 5, 8], [6, 7, 0]], "AStar", "Manhattan")
     solution = AStar_Manhattan.solve()
 
     if solution.solvable:
         solution.print()
+        win = Window(solution)
 
 
 if __name__ == '__main__':

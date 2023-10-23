@@ -27,7 +27,7 @@ class DFS(Search_Algorithm):
             current_state = frontier.pop(len(frontier) - 1)
             current_state_str = self.stringify_state(current_state)
             explored.add(current_state_str)
-            print(current_state_str, "len frontier: ", len(frontier), "len explored: ", len(explored))
+           # print(current_state_str, "len frontier: ", len(frontier), "len explored: ", len(explored))
 
             if current_state == self.goal_test:
                 break
@@ -45,7 +45,7 @@ class DFS(Search_Algorithm):
                 self.apply_move(new_state, x, y, move)
                 new_state_str = self.stringify_state(new_state)
 
-                if new_state_str not in explored and new_state not in frontier:
+                if new_state_str not in explored and new_state_str not in parent:
                     frontier.append(new_state)
                     parent[new_state_str] = (cost, current_state_str)
                     search_depth = max(search_depth, cost)

@@ -72,11 +72,9 @@ class Solution:
         self.search_depth = search_depth
         self.running_time = running_time
 
-    def exist(self):
-        return self.solvable
-
     def print(self):
-        if not self.exist():
+        print(self.solvable)
+        if not self.solvable:
             print("No solution")
         else:
             print("Path:")
@@ -86,7 +84,7 @@ class Solution:
             print("Cost:", self.cost)
             print("Nodes expanded:", self.nodes_expanded)
             print("Search depth:", self.search_depth)
-            print("Running time:", self.running_time)
+            print("Running time:", self.running_time, "Sec")
 
     @staticmethod
     def print_state(state):

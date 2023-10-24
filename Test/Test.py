@@ -4,8 +4,8 @@ from Algorithms.Algorithm_Factory import *
 
 class Test(unittest.TestCase):
     algorithms = [
-        ("AStar", "Manhattan"),
-        ("AStar", "Euclidean"),
+        ("A-Star", "Manhattan"),
+        ("A-Star", "Euclidean"),
         ("DFS", None),
         ("BFS", None)
     ]
@@ -15,10 +15,7 @@ class Test(unittest.TestCase):
             print(f"\n{algorithm}{' with ' + heuristic if heuristic else ''}:")
             puzzle = get_algorithm(initial_state, algorithm, heuristic)
             solution = puzzle.solve()
-            print("Cost:", solution.cost)
-            print("Nodes expanded:", solution.nodes_expanded)
-            print("Search depth:", solution.search_depth)
-            print("Running time:", solution.running_time, "Sec")
+            print("Cost:", solution.stringify())
             self.assertTrue(solution.solvable)
 
     def notSolvable(self, initial_state, algorithm, heuristic=None):

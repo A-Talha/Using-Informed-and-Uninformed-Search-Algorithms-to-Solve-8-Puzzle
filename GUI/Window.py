@@ -11,22 +11,23 @@ FOCUSED_COLOR = "#ebb735"
 BACKGROUND_COLOR = "#404040"
 TRANSPARENT_COLOR = "#00000088"
 
-
 def resize_image(photo_image, new_width, new_height):
     return photo_image.subsample(int(photo_image.width() / new_width), int(photo_image.height() / new_height))
 
 
-def convert_string_to_state(state_str):
-    state_list = state_str.split(",")
-    board_size = int(sqrt(len(state_list)))
+def convert_int_to_state(state):
+    state_str = str(state)
+    if len(state_str) == 8:
+        state_str = '0' + state_str
 
-    state = []
+    state_board = []
+    board_size = int(sqrt(len(state_str)))
     for i in range(board_size):
         row = []
         for j in range(board_size):
-            row.append(int(state_list[i * board_size + j]))
-        state.append(row)
-    return state
+            row.append(int(state_str[i * board_size + j]))
+        state_board.append(row)
+    return state_board
 
 
 class Window:
@@ -139,12 +140,11 @@ class Window:
         self.next_state_button.configure(state="disabled")
 
         #taking intial satate and turning it into 2d list
-        intial = self.initial_state_entry.get()
-        intial = intial.split(",")
-        board = [[0] * 3 for _ in range(3)]
-        for i in range(0,3):
-            for j in range(0,3):
-                board[i][j] = int(intial[3*i + j])
+        initial = self.initial_state_entry.get()
+        initial = initial.replace(',','')
+        board = int(''.join([''.join(map(str, row)) for row in initial]))
+        print(type(board),board)
+
 
         #taking the method
         method = self.algorithm_var.get()
@@ -173,7 +173,7 @@ class Window:
             if len(self.states) > 1:
                 self.next_state_button.configure(state="enabled")
             for state_index in range(len(self.states)):
-                self.states[state_index] = convert_string_to_state(self.states[state_index])
+                self.states[state_index] = convert_int_to_state(self.states[state_index])
 
             self.board_size = len(self.states[0])
             self.draw_board(self.states[0])

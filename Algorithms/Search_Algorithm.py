@@ -49,6 +49,10 @@ class Search_Algorithm(ABC):
         return goal_test
 
     @staticmethod
+    def state_to_string(self,state):
+        return ''.join([''.join(map(str, row)) for row in state])
+
+    @staticmethod
     def get_board_size(self):
         return 3
 

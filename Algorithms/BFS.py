@@ -32,7 +32,6 @@ class BFS(Search_Algorithm):
             current_state_str = frontier.get()
             explored.add(current_state_str)
             all.add(current_state_str)
-            #print(current_state_str, "len frontier: ", frontier.qsize(), "len explored: ", len(explored))
 
             if current_state_str == goal_state_str:
                 break

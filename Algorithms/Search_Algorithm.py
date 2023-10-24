@@ -1,12 +1,16 @@
+# Import necessary libraries and modules
 from abc import ABC, abstractmethod
 from math import sqrt
 
+# Define the dimension of the game board
 BOARD_DIMENSION = 3
 
+# Define movement directions (up, right, down, left)
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 
 
+# Create an abstract base class for search algorithms
 class Search_Algorithm(ABC):
     def __init__(self, initial_state, goal_test):
         self.initial_state = initial_state
@@ -19,6 +23,7 @@ class Search_Algorithm(ABC):
     def set_goal_test(self):
         return self.goal_test
 
+    # Count the number of inversions in the state
     @staticmethod
     def count_inversions(state):
         inversions = 0
@@ -33,13 +38,13 @@ class Search_Algorithm(ABC):
                         inversions += 1
         return inversions % 2
 
+    # Check if the initial state is solvable by comparing inversions
     def is_solvable(self):
-        print(self.initial_state, self.goal_test)
         initial_state_inversions = self.count_inversions(self.initial_state)
         goal_test_inversions = self.count_inversions(self.goal_test)
-        print(initial_state_inversions, goal_test_inversions)
         return initial_state_inversions == goal_test_inversions
 
+    # Find the path from the initial state to the goal state using parent pointers
     def find_path(self, parent):
         path = []
         state_str = self.goal_test
@@ -50,6 +55,7 @@ class Search_Algorithm(ABC):
         path.reverse()
         return path
 
+    # Get the location of the empty tile in the state
     @staticmethod
     def get_empty_tile_location(state):
         count = 8
@@ -60,14 +66,17 @@ class Search_Algorithm(ABC):
             count -= 1
         return count // 3, count % 3
 
+    # Abstract method to solve the puzzle
     @abstractmethod
     def solve(self):
         return Solution(False)
 
+    # Check if a move is valid given the current position and the direction
     @staticmethod
     def is_valid_move(x, y, move):
         return not (x + dx[move] < 0 or x + dx[move] >= 3 or y + dy[move] < 0 or y + dy[move] >= 3)
 
+    # Apply a move to the state
     @staticmethod
     def apply_move(state, x, y, move):
         old_index = x * 3 + y
@@ -79,6 +88,7 @@ class Search_Algorithm(ABC):
         return state
 
 
+# Class to represent the solution of the puzzle
 class Solution:
     def __init__(self, solvable, path=None, cost=None, nodes_expanded=None, search_depth=None, running_time=None):
         if path is None:
@@ -90,9 +100,11 @@ class Solution:
         self.search_depth = search_depth
         self.running_time = running_time
 
+    # Check if a solution exists
     def exist(self):
         return self.solvable
 
+    # Convert the solution to a string
     def stringify(self):
         if not self.exist():
             return ""
@@ -103,6 +115,7 @@ class Solution:
             string += "Running time: " + f"{self.running_time:.5f} s" + "\n"
             return string
 
+    # Print the solution
     def print(self):
         if self.solvable:
             print("Path:")
@@ -114,6 +127,7 @@ class Solution:
             print("Search depth:", self.search_depth)
             print("Running time:", self.running_time, "S")
 
+    # Print the state of the puzzle
     @staticmethod
     def print_state(state):
         state_str = str(state)

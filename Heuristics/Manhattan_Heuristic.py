@@ -9,11 +9,18 @@ def manhattan_distance(x1, y1, x2, y2):
 
 
 # Heuristic function that calculates the Manhattan heuristic for a given state
-def manhattan_heuristic(state):
+def manhattan_heuristic(state, goal_state):
     # Initialize the sum of Manhattan distances to 0
     manhattan_sum = 0
     # Calculate the total number of cells on the board (assuming it's a 3x3 board)
     board_size = BOARD_DIMENSION * BOARD_DIMENSION
+
+    # Create a dictionary to store the current location of each tile
+    current_location = dict()
+    state_int = goal_state
+    for i in range(board_size):
+        current_location[state_int % 10] = board_size - 1 - i
+        state_int //= 10
 
     # Iterate through each cell of the state
     for i in range(board_size):
@@ -25,8 +32,8 @@ def manhattan_heuristic(state):
             # Calculate the Manhattan distance from the current cell position to its goal position
             # (board_size - 1 - i) // BOARD_DIMENSION gives the goal row, and (board_size - 1 - i) % BOARD_DIMENSION gives the goal column
             manhattan_sum += manhattan_distance((board_size - 1 - i) // BOARD_DIMENSION,
-                                                (board_size - 1 - i) % BOARD_DIMENSION, val // BOARD_DIMENSION,
-                                                val % BOARD_DIMENSION)
+                                                (board_size - 1 - i) % BOARD_DIMENSION, current_location[val] // BOARD_DIMENSION,
+                                                current_location[val] % BOARD_DIMENSION)
 
         # Remove the rightmost digit to process the next cell
         state //= 10

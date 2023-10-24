@@ -27,7 +27,7 @@ class A_Star(Search_Algorithm):
 
         # Initialize data structures for the search, including a priority queue, explored set, and parent dictionary.
         frontier = queue.PriorityQueue()
-        explored = set()
+        explored = dict()
         parent = dict()
 
         # Add the initial state to the frontier with a cost of 0 and no parent.
@@ -41,9 +41,11 @@ class A_Star(Search_Algorithm):
         while not frontier.empty():
             # Get the current state with the highest priority from the frontier.
             current_state = frontier.get()[1]
+            if current_state in explored:
+                continue
 
             # Mark the current state as explored.
-            explored.add(current_state)
+            explored[current_state] = True
 
             # If the goal state is found, exit the loop.
             if current_state == self.goal_test:
@@ -63,7 +65,7 @@ class A_Star(Search_Algorithm):
 
                 # Apply the move to generate a new state and calculate its priority.
                 new_state = self.apply_move(current_state, x, y, move)
-                priority = cost + self.heuristic(new_state)
+                priority = cost + self.heuristic(new_state, self.goal_test)
 
                 if new_state not in parent and new_state not in explored:
                     # Add the new state to the frontier with its priority and set its cost and parent.

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from math import sqrt
 
+#down right up left
+#0     1    2     3
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 
@@ -10,6 +12,34 @@ class Search_Algorithm(ABC):
         self.initial_state = initial_state
         self.board_size = self.get_board_size()
         self.goal_test = self.set_goal_test()
+
+    @staticmethod
+    def get_empty_tile_location_dfs_and_bfs(state):
+        zeroPlace = 0
+        for i in state:
+            if i == '0':
+                break;
+            zeroPlace += 1
+        return zeroPlace // 3, zeroPlace % 3, zeroPlace
+
+    @staticmethod
+    def apply_move_bfs_and_dfs(state, zero, move):
+        string_list = list(state)
+        if move == 0:
+            string_list[zero], string_list[zero + 3] = string_list[zero + 3], string_list[zero]
+        elif move == 1:
+            string_list[zero], string_list[zero + 1] = string_list[zero + 1], string_list[zero]
+        elif move == 2:
+            string_list[zero], string_list[zero - 3] = string_list[zero - 3], string_list[zero]
+        elif move == 3:
+            string_list[zero], string_list[zero - 1] = string_list[zero - 1], string_list[zero]
+        result_string = ''.join(string_list)
+        return result_string
+
+    @staticmethod
+    def stringify_state_dfs_and_bfs(state):
+        s = "".join(["".join(map(str, row)) for row in state])
+        return s
 
     @staticmethod
     def get_empty_tile_location(state):
@@ -51,9 +81,12 @@ class Search_Algorithm(ABC):
     def is_valid_move(self, x, y, move):
         return not (x + dx[move] < 0 or x + dx[move] >= self.board_size or y + dy[move] < 0 or y + dy[move] >= self.board_size)
 
-    def find_path(self, goal_test, parent):
+    def find_path(self, goal_test, parent, dfs_bfs_bool):
         path = []
-        state_str = self.stringify_state(goal_test)
+        if not dfs_bfs_bool:
+            state_str = self.stringify_state(goal_test)
+        else:
+            state_str = self.stringify_state_dfs_and_bfs(goal_test)
         while state_str:
             path.append(state_str)
             state_str = parent[state_str][1]

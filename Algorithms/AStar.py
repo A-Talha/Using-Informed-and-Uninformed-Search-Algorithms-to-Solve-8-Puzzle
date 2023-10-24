@@ -76,7 +76,7 @@ class A_Star(Search_Algorithm):
 
         end_time = time.perf_counter()
 
-        path = self.find_path(self.goal_test, parent)
+        path = self.find_path(self.goal_test, parent, False)
         cost = parent[self.stringify_state(self.goal_test)][0]
         nodes_expanded = len(explored)
         running_time = end_time - start_time

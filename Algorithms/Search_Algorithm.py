@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from math import sqrt
 
-#down right up left
-#0     1    2     3
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 
@@ -10,83 +8,58 @@ dy = [0, 1, 0, -1]
 class Search_Algorithm(ABC):
     def __init__(self, initial_state):
         self.initial_state = initial_state
-        self.board_size = self.get_board_size()
-        self.goal_test = self.set_goal_test()
+        self.board_size = 3
+        self.goal_test = 12345678
 
-    @staticmethod
-    def get_empty_tile_location_dfs_and_bfs(state):
-        zeroPlace = 0
-        for i in state:
-            if i == '0':
-                break;
-            zeroPlace += 1
-        return zeroPlace // 3, zeroPlace % 3, zeroPlace
+    def is_solvable(self):
+        inversions = 0
+        initial_state_str = str(self.initial_state)
 
-    @staticmethod
-    def apply_move_bfs_and_dfs(state, zero, move):
-        string_list = list(state)
-        if move == 0:
-            string_list[zero], string_list[zero + 3] = string_list[zero + 3], string_list[zero]
-        elif move == 1:
-            string_list[zero], string_list[zero + 1] = string_list[zero + 1], string_list[zero]
-        elif move == 2:
-            string_list[zero], string_list[zero - 3] = string_list[zero - 3], string_list[zero]
-        elif move == 3:
-            string_list[zero], string_list[zero - 1] = string_list[zero - 1], string_list[zero]
-        result_string = ''.join(string_list)
-        return result_string
-
-    @staticmethod
-    def stringify_state_dfs_and_bfs(state):
-        s = "".join(["".join(map(str, row)) for row in state])
-        return s
+        for i in range(9):
+            if not initial_state_str[i]:
+                for j in range(i):
+                    if initial_state_str[j] and initial_state_str[i] < initial_state_str[j]:
+                        inversions += 1
+        return inversions % 2 == 0
 
     @staticmethod
     def get_empty_tile_location(state):
-        return next(((x, y) for x, row in enumerate(state) for y, val in enumerate(row) if val == 0))
+        count = 8
+        while state:
+            if state % 10 == 0:
+                break
+            state //= 10
+            count -= 1
+
+        return count // 3, count % 3
 
     @staticmethod
     def apply_move(state, x, y, move):
-        state[x][y], state[x + dx[move]][y + dy[move]] = state[x + dx[move]][y + dy[move]], state[x][y]
+        old_index = x * 3 + y
+        new_index = (x + dx[move]) * 3 + (y + dy[move])
+
+        value_at_new = (state // (10 ** (8 - new_index))) % 10
+        state -= value_at_new * (10 ** (8 - new_index))
+        state += value_at_new * (10 ** (8 - old_index))
+        return state
 
     @staticmethod
-    def deep_copy(state):
-        return [row[:] for row in state]
-
-    @staticmethod
-    def stringify_state(state):
-        return ",".join([",".join(map(str, row)) for row in state])
-
     def set_goal_test(self):
-        goal_test = [[j * self.board_size + i for i in range(self.board_size)] for j in range(self.board_size)]
+        goal_test = 12345678
         return goal_test
 
+    @staticmethod
     def get_board_size(self):
-        return len(self.initial_state[0])
+        return 3
 
-    def is_solvable(self):
-        size = self.get_board_size()
-        inversions_count = 0
-        state_list = [element for sublist in self.initial_state for element in sublist]
+    @staticmethod
+    def is_valid_move(x, y, move):
+        return not (x + dx[move] < 0 or x + dx[move] >= 3 or y + dy[move] < 0 or y + dy[move] >= 3)
 
-        for i in range(size * size):
-            if state_list[i] == 0:
-                continue
-            for j in range(i):
-                if state_list[j] and state_list[i] > state_list[j]:
-                    inversions_count += 1
-
-        return inversions_count % 2 == 0
-
-    def is_valid_move(self, x, y, move):
-        return not (x + dx[move] < 0 or x + dx[move] >= self.board_size or y + dy[move] < 0 or y + dy[move] >= self.board_size)
-
-    def find_path(self, goal_test, parent, dfs_bfs_bool):
+    @staticmethod
+    def find_path(parent):
         path = []
-        if not dfs_bfs_bool:
-            state_str = self.stringify_state(goal_test)
-        else:
-            state_str = self.stringify_state_dfs_and_bfs(goal_test)
+        state_str = 12345678
         while state_str:
             path.append(state_str)
             state_str = parent[state_str][1]
@@ -124,10 +97,7 @@ class Solution:
             return string
 
     def print(self):
-        print(self.solvable)
-        if not self.solvable:
-            print("No solution")
-        else:
+        if self.solvable:
             print("Path:")
             for state_index in range(len(self.path)):
                 print("State", str(state_index) + ':')
@@ -135,16 +105,18 @@ class Solution:
             print("Cost:", self.cost)
             print("Nodes expanded:", self.nodes_expanded)
             print("Search depth:", self.search_depth)
-            print("Running time:", self.running_time, "Sec")
+            print("Running time:", self.running_time, "S")
 
     @staticmethod
     def print_state(state):
-        state_board = state.split(",")
-        board_size = int(sqrt(len(state_board)))
+        state_str = str(state)
+        if len(state_str) == 8:
+            state_str = '0' + state_str
 
+        board_size = int(sqrt(len(state_str)))
         for i in range(board_size):
             for j in range(board_size):
-                print(state_board[i * board_size + j], end=' ')
+                print(state_str[i * board_size + j], end=' ')
             print()
         print()
 

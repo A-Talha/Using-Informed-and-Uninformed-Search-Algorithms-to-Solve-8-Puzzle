@@ -10,7 +10,7 @@ def get_algorithm(initial_state, algorithm, heuristic=None):
             return DFS(initial_state)
         case "BFS":
             return BFS(initial_state)
-        case "AStar":
+        case "A-Star":
             if heuristic is None:
                 return Search_Algorithm(initial_state)
             return A_Star(initial_state, heuristic)

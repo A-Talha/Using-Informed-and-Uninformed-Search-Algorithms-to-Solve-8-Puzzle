@@ -1,4 +1,5 @@
 import time
+import queue
 
 from Algorithms.Search_Algorithm import Search_Algorithm, Solution
 
@@ -9,50 +10,57 @@ class DFS(Search_Algorithm):
 
     def solve(self):
         if not self.is_solvable():
+            print(self.is_solvable())
             return Solution(False)
 
-        frontier = [self.initial_state]
+        initial_state_str = self.stringify_state_dfs_and_bfs(self.initial_state)
+        frontier = [initial_state_str]
+        goal_state_str = self.stringify_state_dfs_and_bfs(self.goal_test)
         explored = set()
+        all = set()
         parent = dict()          # Parent map its key : current_state & value : (cost of the current_state, its parent)
 
         search_depth = 0
-        #
-        initial_state_str = self.stringify_state(self.initial_state)
+
+
         parent[initial_state_str] = (0, None)
 
         start_time = time.perf_counter()
 
         while not len(frontier) == 0:
-            current_state = frontier.pop(len(frontier) - 1)
-            current_state_str = self.stringify_state(current_state)
+            current_state_str = frontier.pop(len(frontier)-1)
             explored.add(current_state_str)
+            all.add(current_state_str)
+            #print(current_state_str, "len frontier: ", frontier.qsize(), "len explored: ", len(explored))
 
-            if current_state == self.goal_test:
+            if current_state_str == goal_state_str:
                 break
 
             cost = parent[current_state_str][0]
             cost += 1
 
-            x, y = self.get_empty_tile_location(current_state)
+            x, y, zero = self.get_empty_tile_location_dfs_and_bfs(current_state_str)
 
             for move in range(4):
                 if not self.is_valid_move(x, y, move):
                     continue
+             #   print(move, "jgf",current_state_str)
 
-                new_state = self.deep_copy(current_state)
-                self.apply_move(new_state, x, y, move)
-                new_state_str = self.stringify_state(new_state)
 
-                if new_state_str not in explored and new_state_str not in parent:
-                    frontier.append(new_state)
+                new_state_str = self.apply_move_bfs_and_dfs(current_state_str, zero, move)
+              #  print(new_state_str)
+
+                if new_state_str not in explored and new_state_str not in all:
+                    all.add(new_state_str)
+                    frontier.append(new_state_str)
                     parent[new_state_str] = (cost, current_state_str)
-                    search_depth = max(search_depth, cost)
+                    search_depth = max(search_depth , cost)
 
         end_time = time.perf_counter()
-
-        path = self.find_path(self.goal_test, parent)
+        print(end_time - start_time)
+        path = self.find_path(self.goal_test, parent, True)
         total_time = end_time - start_time
-        cost = parent[self.stringify_state(self.goal_test)][0]
+        cost = parent[goal_state_str][0]
         nodes_expanded = len(explored)
         return Solution(True, path, cost, nodes_expanded, search_depth, total_time)
 

@@ -5,8 +5,8 @@ from Algorithms.Search_Algorithm import Search_Algorithm, Solution
 
 
 class BFS(Search_Algorithm):
-    def __init__(self, initial_state):
-        super().__init__(initial_state)
+    def __init__(self, initial_state, goal_test):
+        super().__init__(initial_state, goal_test)
 
     def solve(self):
         if not self.is_solvable():

@@ -9,8 +9,8 @@ from Heuristics.Euclidean_Heuristic import euclidean_heuristic
 # Import necessary modules and classes for the A* search algorithm.
 
 class A_Star(Search_Algorithm):
-    def __init__(self, initial_state, heuristic):
-        super().__init__(initial_state)
+    def __init__(self, initial_state, goal_test, heuristic):
+        super().__init__(initial_state, goal_test)
 
         match heuristic:
             case "Manhattan":
@@ -55,7 +55,7 @@ class A_Star(Search_Algorithm):
                 # Check the validity of possible moves (up, down, left, right).
 
                 new_state = self.apply_move(current_state, x, y, move)
-                priority = cost + self.heuristic(new_state, self.board_size)
+                priority = cost + self.heuristic(new_state)
                 if new_state not in parent and new_state not in explored:
                     frontier.put((priority, new_state))
                     parent[new_state] = (cost, current_state)
